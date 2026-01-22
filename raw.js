@@ -613,45 +613,27 @@ startserver().catch(error => {
   console.error('Unhandled error in startserver:', error);
 });
 
-// 根路由
- // 健康检查接口                                                                                                                                           
+// 健康检查接口                                                                                                                                           
+  app.get("/healthy", function(req, res) {                                                                                                                  
+    res.status(200).json({                                                                                                                                  
+      status: "healthy",                                                                                                                                    
+      timestamp: new Date().toISOString(),                                                                                                                  
+      uptime: process.uptime(),                                                                                                                             
+      service: "running",                                                                                                                                   
+      port: PORT                                                                                                                                            
+    });                                                                                                                                                     
+  });                                                                                                                                                       
+                                                                                                                                                            
+  // 根路由                                                                                                                                                 
   app.get("/", async function(req, res) {                                                                                                                   
     try {                                                                                                                                                   
-      const healthCheck = {                                                                                                                                 
-        status: "healthy",                                                                                                                                  
-        timestamp: new Date().toISOString(),                                                                                                                
-        uptime: process.uptime(),                                                                                                                           
-        service: "running",                                                                                                                                 
-        port: PORT,                                                                                                                                         
-        subscription_path: `/${SUB_PATH}`,                                                                                                                  
-        environment: {                                                                                                                                      
-          nodejs: process.version,                                                                                                                          
-          platform: process.platform,                                                                                                                       
-          arch: process.arch                                                                                                                                
-        }                                                                                                                                                   
-      };                                                                                                                                                    
-                                                                                                                                                            
-      // 如果请求头包含 Accept: application/json，返回 JSON                                                                                                 
-      if (req.headers.accept && req.headers.accept.includes('application/json')) {                                                                          
-        res.status(200).json(healthCheck);                                                                                                                  
-      } else {                                                                                                                                              
-        // 否则返回 HTML 页面                                                                                                                               
-        try {                                                                                                                                               
-          const filePath = path.join(__dirname, 'index.html');                                                                                              
-          const data = await fs.promises.readFile(filePath, 'utf8');                                                                                        
-          res.send(data);                                                                                                                                   
-        } catch (err) {                                                                                                                                     
-          res.send("Service is running!<br><br>You can visit /{SUB_PATH}(Default: /sub) get your nodes!");                                                  
-        }                                                                                                                                                   
-      }                                                                                                                                                     
+      const filePath = path.join(__dirname, 'index.html');                                                                                                  
+      const data = await fs.promises.readFile(filePath, 'utf8');                                                                                            
+      res.send(data);                                                                                                                                       
     } catch (err) {                                                                                                                                         
-      res.status(500).json({                                                                                                                                
-        status: "unhealthy",                                                                                                                                
-        error: err.message,                                                                                                                                 
-        timestamp: new Date().toISOString()                                                                                                                 
-      });                                                                                                                                                   
+      res.send("Service is running!<br><br>You can visit /{SUB_PATH}(Default: /sub) get your nodes!");                                                      
     }                                                                                                                                                       
-  }); 
-
-app.listen(PORT, () => console.log(`http server is running on port:${PORT}!`));
+  });                                                                                                                                                       
+                                                                                                                                                            
+  app.listen(PORT, () => console.log(`http server is running on port:${PORT}!`)); 
 
