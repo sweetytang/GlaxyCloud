@@ -23,6 +23,21 @@ const CFIP = process.env.CFIP || 'cdns.doon.eu.org';        // 节点优选域�
 const CFPORT = process.env.CFPORT || 443;                   // 节点优选域名或优选ip对应的端口
 const NAME = process.env.NAME || 'Galaxy';                  // 节点名称
 
+// ========== 立即注册健康检查路由 ==========                             
+  app.get("/healthy", function(req, res) {                                  
+    res.status(200).send("OK");                                             
+  });                                                                       
+                                                                            
+  app.get("/health", function(req, res) {                                   
+    res.status(200).send("OK");                                             
+  });                                                                       
+                                                                            
+  // ========== 立即启动 HTTP 服务器 ==========                             
+  app.listen(PORT, () => {                                                  
+    console.log(`http server is running on port:${PORT}!`);                 
+    console.log(`Health check available at /healthy and /health`);          
+  });                                                                       
+        
 // 创建运行文件夹
 if (!fs.existsSync(FILE_PATH)) {
   fs.mkdirSync(FILE_PATH);
@@ -611,18 +626,7 @@ async function startserver() {
 }
 startserver().catch(error => {
   console.error('Unhandled error in startserver:', error);
-});
-
-// 健康检查接口                                                                                                                                           
-  app.get("/healthy", function(req, res) {                                                                                                                  
-    res.status(200).json({                                                                                                                                  
-      status: "healthy",                                                                                                                                    
-      timestamp: new Date().toISOString(),                                                                                                                  
-      uptime: process.uptime(),                                                                                                                             
-      service: "running",                                                                                                                                   
-      port: PORT                                                                                                                                            
-    });                                                                                                                                                     
-  });                                                                                                                                                       
+});                                                                                                                                                     
                                                                                                                                                             
   // 根路由                                                                                                                                                 
   app.get("/", async function(req, res) {                                                                                                                   
@@ -635,5 +639,5 @@ startserver().catch(error => {
     }                                                                                                                                                       
   });                                                                                                                                                       
                                                                                                                                                             
-  app.listen(PORT, () => console.log(`http server is running on port:${PORT}!`)); 
+  // app.listen(PORT, () => console.log(`http server is running on port:${PORT}!`)); 
 
